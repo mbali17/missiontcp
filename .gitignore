@@ -102,3 +102,4 @@ ENV/
 
 #idea folder
 .idea/
+logs/

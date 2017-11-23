@@ -1,1 +1,0 @@
-#list of agent,routers that the network consists of.The format of the entry is host_name,port,routerORagent(0-router,1-agent)
