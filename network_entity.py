@@ -19,7 +19,6 @@ class NetworkEnity(Thread):
                 print("The data recieved is"+ recieved_data)
 
         def start_server(self):
-            print("Starting server")
             #setting up socket stream.
             entity_socket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
             #binding the port to the hostname.Since bind accepts only one param we need to create tuple for the host and port.
@@ -28,7 +27,6 @@ class NetworkEnity(Thread):
             #Server mode on and accepts upto 5 connections,before ignoring the incoming request.
             #TODO : Make the number of connections configurable.
             entity_socket.listen(5)
-            print("Started on port ",self.entity_details_split[1],"and hostname: ",self.entity_details_split[0])
             #accept connections infinitely until interrupted.
             while True:
                 #Rerurns the new socket for the connection and the host connected to.
@@ -39,8 +37,9 @@ class NetworkEnity(Thread):
                     current_socket.close()
         def run(self):
             self.entity_details_split = self.entity_details.split(",")
-            print("Staring entity")
             #Line in CSV is terminated with a new line hence truncating it.
-            entityLogger = mission_helper.create_log_file(self.entity_details_split[3].rstrip("\n")+".log","entity_details_split[3]")
-            entityLogger.info("the entity details are"+self.entity_details)
+            self.entityLogger = mission_helper.create_log_file(self.entity_details_split[3].rstrip("\n")+".log","entity_details_split[3]")
+            self.entityLogger.info("the entity details are"+self.entity_details)
             self.start_server()
+            #Assing the value of the flag to check if it is router or agent
+            self.is_router = self.entity_details_split[2]
