@@ -9,3 +9,4 @@ if __name__ == "__main__":
     start_time = time.time()
     setup_adhoc_network()
     print("Netowork setup done in",(time.time()-start_time),"Seconds")
+

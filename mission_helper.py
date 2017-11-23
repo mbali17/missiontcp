@@ -37,3 +37,8 @@ def create_log_file(log_name = "mission_tcp.log",logger_name = "main_logger"):
     logging_file_handler.setFormatter(logging_formatter)
     logger.addHandler(logging_file_handler)
     return logger
+
+
+def calcualte_shortest_path():
+    print("calulating shortest path.")
+

@@ -43,3 +43,9 @@ class NetworkEnity(Thread):
             self.start_server()
             #Assing the value of the flag to check if it is router or agent
             self.is_router = self.entity_details_split[2]
+            if self.is_router == 0 :
+                print("Perform agent specific operations")
+            elif self.is_router == 1 :
+                print("Perfrom router specific operations")
+            else :
+                print("Perform head quarters operations")
