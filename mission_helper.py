@@ -21,6 +21,10 @@ def setup_adhoc_network():
             app_logger.info("Sleeping for 5 seconds")
             #Sleep for 5 seconds before adding the new entity.
             time.sleep(5)
+        with open("start_communication.txt","w") as sync_file:
+            sync_file.write("Start_communication")
+            sync_file.close()
+        print("Communication to begin in a while")
 """
     Creates a logger with a given logger name file name.
     Reference: https://stackoverflow.com/a/17037016/6765884

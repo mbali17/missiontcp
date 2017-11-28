@@ -3,6 +3,9 @@ This would be a thread class. Which is started for each network entity( agent,ro
 '''
 import socket
 from threading import Thread
+
+import polling as polling
+
 import mission_helper
 """
 Spins a new thread for each agent in the file.
@@ -11,6 +14,7 @@ class NetworkEnity(Thread):
         def __init__(self,entity_details):
             super(NetworkEnity, self).__init__()
             self.entity_details = entity_details
+            self.is_filefound = False
         def read_data_and_send_response(self):
             while True:
                 #Define the bytes of data to be received each time.
@@ -18,6 +22,17 @@ class NetworkEnity(Thread):
                 recieved_data = self.socket_curr.recv(20)
                 print("The data recieved is"+ recieved_data)
 
+        #https://pypi.python.org/pypi/polling/0.3.0 -- python polling to know if the file exists
+        #TODO : Make the times configurable via a properties file.,
+        def poll_if_file_exists(self):
+            self.entityLogger.info("Polling to check if the start communication file is created")
+            #Check if the file exists every 30 seconds for 2 minutes this is the flag to start communication
+            file_handle = polling.poll(
+                lambda: open('start_communication.txt'),
+                        ignore_exceptions=(IOError),
+                        timeout=120,
+                        step=60,)
+            return file_handle
         def start_server(self):
             #setting up socket stream.
             entity_socket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
@@ -27,14 +42,21 @@ class NetworkEnity(Thread):
             #Server mode on and accepts upto 5 connections,before ignoring the incoming request.
             #TODO : Make the number of connections configurable.
             entity_socket.listen(5)
+            self.poll_if_file_exists()
+            self.entityLogger.info("Starting  communication"+self.entity_details_split[3].rstrip("\n"))
             #accept connections infinitely until interrupted.
+            self.listen_to_connections(entity_socket)
+
+        def listen_to_connections(self, entity_socket):
             while True:
-                #Rerurns the new socket for the connection and the host connected to.
+                self.entityLogger.info("accepting connection")
+                # Rerurns the new socket for the connection and the host connected to.
                 try:
-                    current_socket,host = entity_socket.accept()
+                    current_socket, host = entity_socket.accept()
                     self.socket_curr = current_socket
                 finally:
                     current_socket.close()
+
         def run(self):
             self.entity_details_split = self.entity_details.split(",")
             #Line in CSV is terminated with a new line hence truncating it.
@@ -43,9 +65,3 @@ class NetworkEnity(Thread):
             self.start_server()
             #Assing the value of the flag to check if it is router or agent
             self.is_router = self.entity_details_split[2]
-            if self.is_router == 0 :
-                print("Perform agent specific operations")
-            elif self.is_router == 1 :
-                print("Perfrom router specific operations")
-            else :
-                print("Perform head quarters operations")
