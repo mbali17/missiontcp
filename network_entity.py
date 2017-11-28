@@ -8,7 +8,7 @@ import polling as polling
 
 import mission_helper
 """
-Spins a new thread for each agent in the file.
+Spins a new thread for each network entity in the file in the file.
 """
 class NetworkEnity(Thread):
         def __init__(self,entity_details):
@@ -19,9 +19,9 @@ class NetworkEnity(Thread):
             while True:
                 #Define the bytes of data to be received each time.
                 #TODO: Make this buffer size configurable via properties file or console.
-                recieved_data = self.socket_curr.recv(20)
-                print("The data recieved is"+ recieved_data)
-
+                recieved_data = self.socket_curr.recv(1024)
+                if not recieved_data: break
+                print("The data recieved is", recieved_data)
         #https://pypi.python.org/pypi/polling/0.3.0 -- python polling to know if the file exists
         #TODO : Make the times configurable via a properties file.,
         def poll_if_file_exists(self):
@@ -51,11 +51,14 @@ class NetworkEnity(Thread):
             while True:
                 self.entityLogger.info("accepting connection")
                 # Rerurns the new socket for the connection and the host connected to.
-                try:
-                    current_socket, host = entity_socket.accept()
-                    self.socket_curr = current_socket
-                finally:
-                    current_socket.close()
+                if self.entity_details_split[3].rstrip("\n") == "ann" and not self.is_filefound :
+                    self.is_filefound=False
+                    print("agent ann here")
+                    self.start_communication()
+                current_socket, host = entity_socket.accept()
+                self.socket_curr = current_socket
+                self.read_data_and_send_response()
+                self.socket_curr.close()
 
         def run(self):
             self.entity_details_split = self.entity_details.split(",")
@@ -65,3 +68,9 @@ class NetworkEnity(Thread):
             self.start_server()
             #Assing the value of the flag to check if it is router or agent
             self.is_router = self.entity_details_split[2]
+
+        def start_communication(self):
+            print("Communicating to HQ")
+            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            s.connect(("localhost",100))
+            s.send(str.encode("Hello from the other side"))
