@@ -1,7 +1,7 @@
 '''
 This is the main file where the application begins.
 '''
-from mission_helper import setup_adhoc_network,create_log_file,run_djikstras
+from mission_helper import setup_adhoc_network,create_log_file
 import time
 
 import os
@@ -16,7 +16,6 @@ if __name__ == "__main__":
         start_time = time.time()
         setup_adhoc_network()
         print("Network setup done in",(time.time()-start_time),"Seconds")
-        run_djikstras()
     #TODO keyboard exception
     except KeyboardInterrupt as k:
         cleanUpResources()
