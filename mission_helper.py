@@ -42,6 +42,8 @@ def create_log_file(log_name = "mission_tcp.log",logger_name = "main_logger"):
     logger.addHandler(logging_file_handler)
     return logger
 
+def run_djikstras():
+    print("implement djikstras")
 
 def calcualte_shortest_path():
     print("calulating shortest path.")
