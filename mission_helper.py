@@ -5,6 +5,7 @@ import time
 
 from network_entity import NetworkEnity
 import logging
+import os
 
 def setup_adhoc_network():
     #get main logger
@@ -30,6 +31,10 @@ def setup_adhoc_network():
     Reference: https://stackoverflow.com/a/17037016/6765884
 """
 def create_log_file(log_name = "mission_tcp.log",logger_name = "main_logger"):
+    #check if the logs folder exists
+    if not os.path.exists("Logs"):
+        print("Logs Directory not found hence creating the logs folder")
+        os.mkdir(os.path.curdir+"/Logs")
     #Create Logger. This is the main logger for the application.
     logger = logging.getLogger(logger_name)
     #set loglevel
