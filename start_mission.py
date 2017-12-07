@@ -3,6 +3,7 @@ This is the main file where the application begins.
 '''
 from mission_helper import setup_adhoc_network,create_log_file
 import time
+
 import os
 #TODO: Fix this clean up of resources.
 def cleanUpResources():

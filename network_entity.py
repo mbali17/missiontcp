@@ -8,6 +8,7 @@ import polling as polling
 from agent import Agent
 from router import Router
 import mission_helper
+
 """
 Spins a new thread for each network entity in the network_entities file.
 """
@@ -47,6 +48,9 @@ class NetworkEnity(Thread):
             entity_socket.listen(5)
             self.poll_if_file_exists()
             self.entityLogger.info("Starting  communication"+self.entity_details_split[3].rstrip("\n"))
+            #Check to see if the current thread is an agent and run djikstras
+            if int(self.entity_details_split[2]) == 1    :
+                mission_helper.run_djikstras()
             #accept connections infinitely until interrupted.
             self.listen_to_connections(entity_socket)
 
