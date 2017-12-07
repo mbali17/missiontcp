@@ -7,6 +7,9 @@ import sys
 import logging
 from collections import defaultdict
 from heapq import *
+import sys
+import codecs
+
 
 
 def setup_adhoc_network():
@@ -124,3 +127,16 @@ if __name__ == "__main__":
 
 sys.stdout = orig_stdout
 f.close()
+
+
+filename = 'dijkstra.csv'
+file = open(filename, "rt")
+f = codecs.open(filename,encoding='utf-8')
+contents = f.read()
+orig_stdout = sys.stdout
+p = open('output.csv', 'w')
+sys.stdout = p
+newcontents = contents.replace('(','').replace(')', '').replace('\'','').replace(', \n', '\n')
+print (newcontents)
+sys.stdout = orig_stdout
+f.close() 
