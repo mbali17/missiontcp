@@ -3,11 +3,13 @@ This is the helper module for the mission.Consisting of the utility methods.
 '''
 import time
 import sys
+#from network_entity import NetworkEnity
 import logging
 from collections import defaultdict
 from heapq import *
-import os
-import network_entity
+import sys
+import codecs
+
 
 
 def setup_adhoc_network():
@@ -20,7 +22,7 @@ def setup_adhoc_network():
         # Start each entity in the network as a separate thread.Each entity is started after 5 seconds.
         for entity in entities:
             app_logger.info("Starting entity "+entity)
-            entityThread = network_entity.NetworkEnity(entity_details = entity)
+            entityThread = NetworkEnity(entity_details = entity)
             entityThread.start()
             app_logger.info("Sleeping for 5 seconds")
             #Sleep for 5 seconds before adding the new entity.
@@ -36,10 +38,6 @@ def setup_adhoc_network():
 """
 
 def create_log_file(log_name = "mission_tcp.log",logger_name = "main_logger"):
-    #check if the logs folder exists
-    if not os.path.exists("Logs"):
-        print("Logs Directory not found hence creating the logs folder")
-        os.mkdir(os.path.curdir+"/Logs")
     #Create Logger. This is the main logger for the application.
     logger = logging.getLogger(logger_name)
     #set loglevel
@@ -58,8 +56,29 @@ Implements Djikstras to find the shortest. Writes the result to a single or agen
 orig_stdout = sys.stdout
 f = open('dijkstra.csv', 'w')
 sys.stdout = f
-#TODO: Read this content from the mission_map.csv file.
-edges = [
+
+def dijkstra(edges, f, t):
+    g = defaultdict(list)
+    for l,r,c in edges:
+        g[l].append((c,r))
+
+    q, seen = [(0,f,())], set()
+    while q:
+        (cost,v1,path) = heappop(q)
+        if v1 not in seen:
+            seen.add(v1)
+            path = (v1, path)
+            if v1 == t: return (cost, path)
+
+            for c, v2 in g.get(v1, ()):
+                if v2 not in seen:
+                    heappush(q, (cost+c, v2, path))
+
+    return float("inf")
+
+# TODO: 
+if __name__ == "__main__":
+    edges = [
         ("111", "8000", 0),
 	("8000", "111", 0),
         ("8000", "8001", 4),
@@ -90,27 +109,6 @@ edges = [
 	("8005", "100", 0 ),
     ]
 
-def dijkstra(edges, f, t):
-    g = defaultdict(list)
-    for l,r,c in edges:
-        g[l].append((c,r))
-
-    q, seen = [(0,f,())], set()
-    while q:
-        (cost,v1,path) = heappop(q)
-        if v1 not in seen:
-            seen.add(v1)
-            path = (v1, path)
-            if v1 == t: return (cost, path)
-
-            for c, v2 in g.get(v1, ()):
-                if v2 not in seen:
-                    heappush(q, (cost+c, v2, path))
-'''
-This method is invoked to find the shortest path.It invokes dijkstras and writes the shortest path to the 
-dijkstra.csv file
-'''
-def find_shortest_path():
     print ("=== Dijkstra ===")
     print ("Ann -> Chan:")
     print (dijkstra(edges, "111", "200"))
@@ -127,5 +125,18 @@ def find_shortest_path():
     print ("Ann -> Jan:")
     print (dijkstra(edges, "111", "100"))
 
-    sys.stdout = orig_stdout
-    f.close()
+sys.stdout = orig_stdout
+f.close()
+
+
+filename = 'dijkstra.csv'
+file = open(filename, "rt")
+f = codecs.open(filename,encoding='utf-8')
+contents = f.read()
+orig_stdout = sys.stdout
+p = open('output.csv', 'w')
+sys.stdout = p
+newcontents = contents.replace('(','').replace(')', '').replace('\'','').replace(', \n', '\n')
+print (newcontents)
+sys.stdout = orig_stdout
+f.close() 
