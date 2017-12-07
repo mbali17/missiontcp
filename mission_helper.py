@@ -58,29 +58,8 @@ Implements Djikstras to find the shortest. Writes the result to a single or agen
 orig_stdout = sys.stdout
 f = open('dijkstra.csv', 'w')
 sys.stdout = f
-
-def dijkstra(edges, f, t):
-    g = defaultdict(list)
-    for l,r,c in edges:
-        g[l].append((c,r))
-
-    q, seen = [(0,f,())], set()
-    while q:
-        (cost,v1,path) = heappop(q)
-        if v1 not in seen:
-            seen.add(v1)
-            path = (v1, path)
-            if v1 == t: return (cost, path)
-
-            for c, v2 in g.get(v1, ()):
-                if v2 not in seen:
-                    heappush(q, (cost+c, v2, path))
-
-    return float("inf")
-
-# TODO: 
-if __name__ == "__main__":
-    edges = [
+#TODO: Read this content from the mission_map.csv file.
+edges = [
         ("111", "8000", 0),
 	("8000", "111", 0),
         ("8000", "8001", 4),
@@ -111,6 +90,27 @@ if __name__ == "__main__":
 	("8005", "100", 0 ),
     ]
 
+def dijkstra(edges, f, t):
+    g = defaultdict(list)
+    for l,r,c in edges:
+        g[l].append((c,r))
+
+    q, seen = [(0,f,())], set()
+    while q:
+        (cost,v1,path) = heappop(q)
+        if v1 not in seen:
+            seen.add(v1)
+            path = (v1, path)
+            if v1 == t: return (cost, path)
+
+            for c, v2 in g.get(v1, ()):
+                if v2 not in seen:
+                    heappush(q, (cost+c, v2, path))
+'''
+This method is invoked to find the shortest path.It invokes dijkstras and writes the shortest path to the 
+dijkstra.csv file
+'''
+def find_shortest_path():
     print ("=== Dijkstra ===")
     print ("Ann -> Chan:")
     print (dijkstra(edges, "111", "200"))
@@ -127,5 +127,5 @@ if __name__ == "__main__":
     print ("Ann -> Jan:")
     print (dijkstra(edges, "111", "100"))
 
-sys.stdout = orig_stdout
-f.close()
+    sys.stdout = orig_stdout
+    f.close()
