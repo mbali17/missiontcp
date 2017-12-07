@@ -2,14 +2,12 @@
 This is the helper module for the mission.Consisting of the utility methods.
 '''
 import time
-import sys
-#from network_entity import NetworkEnity
 import logging
 from collections import defaultdict
 from heapq import *
 import sys
 import codecs
-
+import network_entity
 
 
 def setup_adhoc_network():
@@ -22,7 +20,7 @@ def setup_adhoc_network():
         # Start each entity in the network as a separate thread.Each entity is started after 5 seconds.
         for entity in entities:
             app_logger.info("Starting entity "+entity)
-            entityThread = NetworkEnity(entity_details = entity)
+            entityThread = network_entity.NetworkEnity(entity_details = entity)
             entityThread.start()
             app_logger.info("Sleeping for 5 seconds")
             #Sleep for 5 seconds before adding the new entity.
@@ -53,10 +51,6 @@ def create_log_file(log_name = "mission_tcp.log",logger_name = "main_logger"):
 """
 Implements Djikstras to find the shortest. Writes the result to a single or agent specific file.
 """
-orig_stdout = sys.stdout
-f = open('dijkstra.csv', 'w')
-sys.stdout = f
-
 def dijkstra(edges, f, t):
     g = defaultdict(list)
     for l,r,c in edges:
@@ -76,8 +70,8 @@ def dijkstra(edges, f, t):
 
     return float("inf")
 
-# TODO: 
-if __name__ == "__main__":
+# TODO: Rrefactor to read from file and optimize.
+def find_shortest_path():
     edges = [
         ("111", "8000", 0),
 	("8000", "111", 0),
@@ -108,35 +102,38 @@ if __name__ == "__main__":
 	("100", "8005", 0),
 	("8005", "100", 0 ),
     ]
-
-    print ("=== Dijkstra ===")
-    print ("Ann -> Chan:")
-    print (dijkstra(edges, "111", "200"))
-    print ("Chan -> Ann:")
-    print (dijkstra(edges, "200", "111"))
-
-    print ("Chan -> Jan:")
-    print (dijkstra(edges, "200", "100"))
-    print ("Jan -> Chan:")
-    print (dijkstra(edges, "100", "200"))
-
-    print ("Jan -> Ann:")
-    print (dijkstra(edges, "100", "111"))
-    print ("Ann -> Jan:")
-    print (dijkstra(edges, "111", "100"))
-
-sys.stdout = orig_stdout
-f.close()
-
-
-filename = 'dijkstra.csv'
-file = open(filename, "rt")
-f = codecs.open(filename,encoding='utf-8')
-contents = f.read()
-orig_stdout = sys.stdout
-p = open('output.csv', 'w')
-sys.stdout = p
-newcontents = contents.replace('(','').replace(')', '').replace('\'','').replace(', \n', '\n')
-print (newcontents)
-sys.stdout = orig_stdout
-f.close() 
+    f = open('dijkstra.csv', 'w')
+    f.write("Ann -> Chan:")
+    f.write("\n")
+    f.write (str(dijkstra(edges, "111", "200")))
+    f.write("\n")
+    f.write("Chan -> Ann:")
+    f.write(str(dijkstra(edges, "200", "111")))
+    f.write("\n")
+    f.write("Chan -> Jan:")
+    f.write("\n")
+    f.write(str(dijkstra(edges, "200", "100")))
+    f.write("\n")
+    f.write("Jan -> Chan:")
+    f.write("\n")
+    f.write(str(dijkstra(edges, "100", "200")))
+    f.write("\n")
+    f.write("Jan -> Ann:")
+    f.write("\n")
+    f.write(str(dijkstra(edges, "100", "111")))
+    f.write("\n")
+    f.write("Ann -> Jan:")
+    f.write("\n")
+    f.write(str(dijkstra(edges, "111", "100")))
+    f.write("\n")
+    f.close()
+    filename = 'dijkstra.csv'
+    f = codecs.open(filename,encoding='utf-8')
+    contents = f.read()
+    orig_stdout = sys.stdout
+    p = open('output.csv', 'w')
+    newcontents = contents.replace('(','').replace(')', '').replace('\'','').replace(', \n', '\n')
+    p.write (newcontents)
+    sys.stdout = orig_stdout
+    f.close()
+    p.close()

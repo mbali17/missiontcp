@@ -106,3 +106,5 @@ logs/
 start_communication.txt
 communicationFiles/
 dijkstra.csv
+dijkstras.csv
+output.csv
