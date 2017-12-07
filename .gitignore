@@ -104,3 +104,4 @@ ENV/
 .idea/
 logs/
 start_communication.txt
+communicationFiles/

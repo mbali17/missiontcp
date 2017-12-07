@@ -74,7 +74,8 @@ class NetworkEnity(Thread):
 
         def start_communication(self):
             if int(self.is_router) == 1 or int(self.is_router) == 2:
-                agent =Agent()
+                agent =Agent(self.entityLogger,int(self.entity_details_split[1]))
+                agent.start_communication()
             else:
                 router = Router()
 
