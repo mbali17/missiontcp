@@ -5,6 +5,7 @@ import time
 
 from network_entity import NetworkEnity
 import logging
+import os
 
 def setup_adhoc_network():
     #get main logger
@@ -21,11 +22,19 @@ def setup_adhoc_network():
             app_logger.info("Sleeping for 5 seconds")
             #Sleep for 5 seconds before adding the new entity.
             time.sleep(5)
+        with open("start_communication.txt","w") as sync_file:
+            sync_file.write("Start_communication")
+            sync_file.close()
+        print("Communication to begin in a while")
 """
     Creates a logger with a given logger name file name.
     Reference: https://stackoverflow.com/a/17037016/6765884
 """
 def create_log_file(log_name = "mission_tcp.log",logger_name = "main_logger"):
+    #check if the logs folder exists
+    if not os.path.exists("Logs"):
+        print("Logs Directory not found hence creating the logs folder")
+        os.mkdir(os.path.curdir+"/Logs")
     #Create Logger. This is the main logger for the application.
     logger = logging.getLogger(logger_name)
     #set loglevel
@@ -37,3 +46,8 @@ def create_log_file(log_name = "mission_tcp.log",logger_name = "main_logger"):
     logging_file_handler.setFormatter(logging_formatter)
     logger.addHandler(logging_file_handler)
     return logger
+
+def run_djikstras():
+    print("implement djikstras")
+
+
