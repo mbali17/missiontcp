@@ -5,17 +5,19 @@ import socket
 from threading import Thread
 
 import polling as polling
-
+from agent import Agent
+from router import Router
 import mission_helper
 
 """
-Spins a new thread for each network entity in the file in the file.
+Spins a new thread for each network entity in the network_entities file.
 """
 class NetworkEnity(Thread):
         def __init__(self,entity_details):
             super(NetworkEnity, self).__init__()
             self.entity_details = entity_details
             self.is_filefound = False
+
         def read_data_and_send_response(self):
             while True:
                 #Define the bytes of data to be received each time.
@@ -23,6 +25,7 @@ class NetworkEnity(Thread):
                 recieved_data = self.socket_curr.recv(1024)
                 if not recieved_data: break
                 print("The data recieved is", recieved_data)
+
         #https://pypi.python.org/pypi/polling/0.3.0 -- python polling to know if the file exists
         #TODO : Make the times configurable via a properties file.,
         def poll_if_file_exists(self):
@@ -55,9 +58,8 @@ class NetworkEnity(Thread):
             while True:
                 self.entityLogger.info("accepting connection")
                 # Rerurns the new socket for the connection and the host connected to.
-                if self.entity_details_split[3].rstrip("\n") == "ann" and not self.is_filefound :
-                    self.is_filefound=False
-                    print("agent ann here")
+                if  not self.is_filefound :
+                    self.is_filefound=True
                     self.start_communication()
                 current_socket, host = entity_socket.accept()
                 self.socket_curr = current_socket
@@ -66,6 +68,8 @@ class NetworkEnity(Thread):
 
         def run(self):
             self.entity_details_split = self.entity_details.split(",")
+            #Assing the value of the flag to check if it is router or agent
+            self.is_router = self.entity_details_split[2]
             #Line in CSV is terminated with a new line hence truncating it.
             self.entityLogger = mission_helper.create_log_file(self.entity_details_split[3].rstrip("\n")+".log","entity_details_split[3]")
             self.entityLogger.info("the entity details are"+self.entity_details)
@@ -73,7 +77,9 @@ class NetworkEnity(Thread):
 
 
         def start_communication(self):
-            print("Communicating to HQ")
-            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            s.connect(("localhost",100))
-            s.send(str.encode("Hello from the other side"))
+            if int(self.is_router) == 1 or int(self.is_router) == 2:
+                agent =Agent(self.entityLogger,int(self.entity_details_split[1]))
+                agent.start_communication()
+            else:
+                router = Router()
+
