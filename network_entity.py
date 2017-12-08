@@ -2,13 +2,16 @@
 This would be a thread class. Which is started for each network entity( agent,router or HQ)
 '''
 import socket
+from random import randint
 from threading import Thread
-
+import pickle
 import polling as polling
 from agent import Agent
 from router import Router
 import mission_helper
 import os
+from tcp_packet import TcpPacket
+
 """
 Spins a new thread for each network entity in the network_entities file.
 """
@@ -24,7 +27,15 @@ class NetworkEnity(Thread):
                 #TODO: Make this buffer size configurable via properties file or console.
                 recieved_data = self.socket_curr.recv(1024)
                 if not recieved_data: break
-                print("The data recieved is", recieved_data)
+                #Deseralize the recieved object
+                self.recieved_packet = pickle.loads(recieved_data)
+            #TODO: Fix infinite loop.TO be continued later
+            print("the source port is",self.recieved_packet.sourceID)
+            s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+            s.connect(("localhost",int(self.recieved_packet.destinationID)))
+            handshakePacket=TcpPacket(self.entity_details_split[1],self.recieved_packet.sourceID,
+                             randint(100, 999),self.recieved_packet.acknowledgement,"20","20","20","0","data",syn="1")
+            s.send(pickle.dumps(handshakePacket))
 
         #https://pypi.python.org/pypi/polling/0.3.0 -- python polling to know if the file exists
         #TODO : Make the times configurable via a properties file.,
@@ -78,8 +89,11 @@ class NetworkEnity(Thread):
 
         def start_communication(self):
             if int(self.is_router) == 1 or int(self.is_router) == 2:
-                agent =Agent(self.entityLogger,int(self.entity_details_split[1]))
+                agent =Agent(self.entityLogger,int(self.entity_details_split[1]),
+                             self.entity_details_split[3].rstrip("\n"))
                 agent.start_communication()
             else:
                 router = Router()
-
+        def convert_byte_to_object(self,data):
+            unpickled_image = pickle.loads(data)
+            print("unpickled object",unpickled_image.getSourceID)
