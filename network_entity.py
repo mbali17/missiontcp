@@ -39,7 +39,7 @@ class NetworkEnity(Thread):
                 self.recieved_packet = pickle.loads(recieved_data)
                 print("is the packet urgent",self.recieved_packet.urgentpointer)
                 if self.recieved_packet.sourceID == "9000":
-                    print("THe code received is",self.recieved_packet.data)
+                    print("HQ received code",self.recieved_packet.data)
                     sys.exit()
                 if(self.recieved_packet.ter == 0):
                     #print("sending response!")
@@ -51,22 +51,30 @@ class NetworkEnity(Thread):
                                       "20","20","0","data",syn="1")
                     self.socket_curr.send(pickle.dumps(response_packet))
                 else:
+                    msg ="Ann confirming the taget with ’Execute’ and the code for HQ is 'PEPPER THE PEPPER.'"
+                    print("sending command to execute")
+                    communicationPacket = TcpPacket("111", "110",
+                                            str(seq_num), str(ack), "20",
+                                            "20", "20", "1", msg, syn="1",other="1")
+                    self.socket_curr.send(pickle.dumps(communicationPacket))
+                    while True:
+                        recieved_data = self.socket_curr.recv(1024)
+                        if not recieved_data:
+                            break
+                        self.recieved_packet = pickle.loads(recieved_data)
+                        print("received location with urgent pointer",self.recieved_packet.urgentpointer)
+                        print(self.recieved_packet.data)
+                        break
                     msg = "Meet me at(32.76” N, -97.07” W )"
                     ack = int(self.recieved_packet.ack)+1
                     seq_num = int(self.recieved_packet.acknowledgement)+1
-                    print("Terminating connection with Jan setting fin bit and ter bit")
+                    print("Terminating connection with ann setting fin bit and ter bit")
                     response_packet = TcpPacket("111","110",
                                       str(seq_num),str(ack),"20",
-                                      "20","20","1",msg,syn="1",fin="1")
+                                      "20","20","1",msg,syn="1",fin="1",ter="1")
                     self.socket_curr.send(pickle.dumps(response_packet))
-                    print("Mission successfull ", self.recieved_packet.data)
-                    print("Communicating with Airforce HQ (Head quarters)")
-                    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                    s.connect(("localhost",9000))
-                    final_message = TcpPacket("9000","999",
-                                      str(seq_num),str(ack),"20",
-                                      "20","20","1","PEPPER THE PEPPER",syn="1",fin="1")
-                    s.send(pickle.dumps(final_message))
+
+
                     #print("Response sent!")
         #https://pypi.python.org/pypi/polling/0.3.0 -- python polling to know if the file exists
         #TODO : Make the times configurable via a properties file.,
@@ -104,7 +112,7 @@ class NetworkEnity(Thread):
                 self.entityLogger.info("accepting connection")
                 # Rerurns the new socket for the connection and the host connected to.x
                 current_socket, host = entity_socket.accept()
-                print("Obtained request")
+                #print("Obtained request")
                 self.socket_curr = current_socket
                 self.read_data_and_send_response()
                 self.socket_curr.close()

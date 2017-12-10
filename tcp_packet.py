@@ -5,7 +5,7 @@ This class defines the structure of the TCP packet.
 class TcpPacket():
     def __init__(self,sourceID,destinationID,sequenceNumber,acknowledgement,
                  headerLength,reciever_window,checksum,urgentpointer,data,
-                 drp=0,ter=0,urg=0,ack=0,rst=0,syn=0,fin=0):
+                 drp=0,ter=0,urg=0,ack=0,rst=0,syn=0,fin=0,other=0):
         self.sourceID = sourceID
         self.destinationID = destinationID
         self.sequenceNumber = sequenceNumber
@@ -22,7 +22,11 @@ class TcpPacket():
         self.checksum = checksum
         self.urgentpointer = urgentpointer
         self.data=data
+        self.other = other
     #getters for the properties.
+    @property
+    def getOther(self):
+        return self.other
     @property
     def getSourceID(self):
         return self.sourceID
