@@ -104,7 +104,9 @@ ENV/
 .idea/
 logs/
 start_communication.txt
-communicationFiles/
+communicationFiles/Ann
+communicationFiles/Chan
+communicationFiles/Jan
 dijkstra.csv
 dijkstras.csv
 output.csv
