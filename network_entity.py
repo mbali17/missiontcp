@@ -38,6 +38,7 @@ class NetworkEnity(Thread):
                 #print("the source port is",self.recieved_packet.sourceID)
                 self.recieved_packet = pickle.loads(recieved_data)
                 print("is the packet urgent",self.recieved_packet.urgentpointer)
+                #print("is the connection terminated(Checks the termination flag)",self.recieved_packet.other    )
                 if self.recieved_packet.sourceID == "9000":
                     print("HQ received code",self.recieved_packet.data)
                     sys.exit()

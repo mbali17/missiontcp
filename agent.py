@@ -17,6 +17,7 @@ class Agent():
         self.agent_name = agent_name
     def generate_sequence_number(self):
         print("generate sequence number as some random number")
+        #TODO read the random range from properties file.
         return randint(100, 999)
     def perform_three_way_handshake(self):
         print("Performing three way handshake",self.agent_name)
@@ -85,11 +86,11 @@ class Agent():
             if not recieved_data:
                 break
             recieved_packet = pickle.loads(recieved_data)
-            print("The number of packets received is ", no_of_packets)
+            #print("The number of packets received is ", no_of_packets)
             if(no_of_packets == 5):
                 msg = "Eavesdropping detected hence terminating connection. The mission continues "+"with aother agents hope to complete this."
                 print(msg)
-                print("setting urgent pointer and termination pointer!!")
+                print("setting urgent pointer!!")
                 communicationPacket = TcpPacket("111", "110",
                                         str(seq_num), str(ack), "20",
                                         "20", checksum, "1", msg, syn="1",other="1")
